@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Part 2: single-node K3s cluster hosting three web apps
+# Single-node K3s cluster hosting three web apps
 # routed by an Ingress based on the HTTP Host header.
 Vagrant.configure("2") do |config|
 

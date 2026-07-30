@@ -27,7 +27,7 @@ spec:
             - containerPort: 8888
 ---
 # ClusterIP service exposing the playground pod on port 8888.
-# During the defense, reach it via `kubectl port-forward svc/playground 8888:8888 -n dev`.
+# Reach it via `kubectl port-forward svc/playground 8888:8888 -n dev`.
 apiVersion: v1
 kind: Service
 metadata:

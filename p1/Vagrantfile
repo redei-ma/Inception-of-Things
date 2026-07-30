@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Part 1: two VMs forming a K3s cluster.
+# Two VMs forming a K3s cluster.
 #   - redei-maS  : control-plane (K3s server)
 #   - redei-maSW : worker         (K3s agent)
 Vagrant.configure("2") do |config|
