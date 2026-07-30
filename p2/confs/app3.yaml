@@ -1,3 +1,5 @@
+# app3: default fallback deployment. Reached when the request does
+# not match "app1.com" nor "app2.com" (Ingress catch-all rule).
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -1,11 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Part 1: two VMs forming a K3s cluster.
+#   - redei-maS  : control-plane (K3s server)
+#   - redei-maSW : worker         (K3s agent)
 Vagrant.configure("2") do |config|
 
   config.vm.box = "bento/ubuntu-24.04"
+  # Box version pinned for reproducibility during evaluation.
   config.vm.box_version = "202510.26.0"
 
+  # --- Control-plane node ---
   config.vm.define "redei-maS" do |server|
     server.vm.hostname = "redei-maS"
     server.vm.network "private_network", ip: "192.168.56.110"
@@ -17,6 +22,7 @@ Vagrant.configure("2") do |config|
     server.vm.provision "shell", path: "scripts/install-server.sh"
   end
 
+  # --- Worker node ---
   config.vm.define "redei-maSW" do |worker|
     worker.vm.hostname = "redei-maSW"
     worker.vm.network "private_network", ip: "192.168.56.111"

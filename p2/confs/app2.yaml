@@ -1,3 +1,7 @@
+# app2: three-replica deployment reached when the Ingress receives
+# a request with Host header "app2.com". The service load-balances
+# across the three pods, so consecutive curls should return different
+# hostnames.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

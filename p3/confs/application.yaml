@@ -1,0 +1,28 @@
+# Argo CD Application: tells Argo CD to watch the GitHub repository
+# and sync any Kubernetes manifests it finds under p3/manifests into
+# the "dev" namespace of this cluster.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: playground
+  # The Application resource itself lives in the argocd namespace,
+  # because that is where the Argo CD controller looks for it.
+  namespace: argocd
+spec:
+  project: default
+
+  # Source: where to read the desired state from.
+  source:
+    repoURL: https://github.com/redei-ma/Inception-of-Things.git
+    targetRevision: main
+    path: p3/manifests
+
+  # Destination: which cluster and namespace to deploy into.
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+
+  syncPolicy:
+    automated:
+      prune: true      # delete resources that were removed from Git
+      selfHeal: true   # revert manual changes made in the cluster

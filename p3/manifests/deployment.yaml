@@ -1,3 +1,9 @@
+# Manifests consumed by Argo CD from the GitHub repository.
+# Argo CD reads this file and applies it into the "dev" namespace,
+# keeping the cluster in sync with whatever is committed on the "main" branch.
+#
+# To switch application version, change the image tag below (v1 <-> v2),
+# commit and push: Argo CD will roll the deployment automatically.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +26,8 @@ spec:
           ports:
             - containerPort: 8888
 ---
+# ClusterIP service exposing the playground pod on port 8888.
+# During the defense, reach it via `kubectl port-forward svc/playground 8888:8888 -n dev`.
 apiVersion: v1
 kind: Service
 metadata:

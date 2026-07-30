@@ -1,3 +1,10 @@
+# Host-based routing:
+#   Host "app1.com" -> app1-service
+#   Host "app2.com" -> app2-service
+#   any other host  -> app3-service (default, no "host" field)
+#
+# K3s ships with Traefik as its default Ingress controller,
+# so this Ingress is picked up automatically.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -24,6 +31,8 @@ spec:
                 name: app2-service
                 port:
                   number: 80
+    # Catch-all: no "host" field means "match any Host header
+    # that did not match a previous rule".
     - http:
         paths:
           - path: /
