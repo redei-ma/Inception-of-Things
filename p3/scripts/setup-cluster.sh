@@ -17,7 +17,9 @@ kubectl create namespace argocd
 kubectl create namespace dev
 
 # --- Install Argo CD from the official upstream manifest ---
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# Server-side apply avoids the "annotations too long" error caused by the
+# large CRDs shipped by Argo CD when using classic client-side apply.
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side
 
 # --- Wait until all Argo CD deployments are Available ---
 kubectl wait --for=condition=available --timeout=300s deployment --all -n argocd

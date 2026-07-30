@@ -8,7 +8,9 @@ set -euo pipefail
 
 # --- Base utilities ---
 apt-get update
-apt-get install -y curl ca-certificates
+# qemu-user-static + binfmt-support let this arm64 VM run amd64-only
+# container images (such as wil42/playground) through kernel-level emulation.
+apt-get install -y curl ca-certificates qemu-user-static binfmt-support
 
 # --- Docker (installed via the official get.docker.com script) ---
 curl -fsSL https://get.docker.com | sh
