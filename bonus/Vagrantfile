@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Extends p3 by adding a local GitLab instance running inside
+# the same cluster. Argo CD watches a project on this local GitLab
+# instead of GitHub. Two provisioners run in order:
+#   1. install-tools.sh : installs Docker, kubectl, k3d and Helm
+#   2. setup-cluster.sh : creates the cluster, installs Argo CD + GitLab,
+#                         applies the Application pointing to local GitLab
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
+
+  config.vm.define "redei-maS" do |server|
+    server.vm.hostname = "redei-maS"
+    server.vm.network "private_network", ip: "192.168.56.113"
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "redei-maS"
+      vb.memory = "7168"
+      vb.cpus = 4
+    end
+    server.vm.provision "shell", path: "scripts/install-tools.sh"
+    server.vm.provision "shell", path: "scripts/setup-cluster.sh"
+  end
+end
