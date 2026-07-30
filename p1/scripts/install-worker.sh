@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 until [ -f /vagrant/token ]; do
   sleep 2
 done

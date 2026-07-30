@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 sudo rm -f /vagrant/token
 
 sudo curl -sfL https://get.k3s.io | sh -
