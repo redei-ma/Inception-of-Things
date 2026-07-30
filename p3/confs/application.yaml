@@ -1,6 +1,6 @@
 # Argo CD Application: tells Argo CD to watch the GitHub repository
-# and sync any Kubernetes manifests it finds under p3/manifests into
-# the "dev" namespace of this cluster.
+# and sync any Kubernetes manifests it finds under the manifests/ folder
+# into the "dev" namespace of this cluster.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

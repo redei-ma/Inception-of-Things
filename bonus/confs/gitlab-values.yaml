@@ -1,20 +1,20 @@
 # Minimal Helm values for the official GitLab chart.
-# Disables the optional and resource-heavy components we do not need
+# Disables optional and resource-heavy components that are not required
 # for this bonus (registry, prometheus, gitlab-runner, cert-manager,
 # nginx-ingress), so that the full stack fits comfortably in the VM.
 #
 # GitLab is reached only from inside the cluster through the Service DNS
-# (gitlab-webservice-default.gitlab.svc.cluster.local:8181) — there is no
+# (gitlab-webservice-default.gitlab.svc.cluster.local:8181); there is no
 # public ingress and no TLS termination in this lab setup.
 
 global:
-  # Community Edition is lighter than Enterprise and fits our needs.
+  # Community Edition is lighter than Enterprise and sufficient here.
   edition: ce
   hosts:
-    # Required by the chart even if we do not expose GitLab publicly.
+    # Required by the chart even when GitLab is not exposed publicly.
     domain: example.com
   ingress:
-    # We do not configure a public ingress nor a TLS certificate.
+    # No public ingress and no TLS certificate are configured.
     configureCertmanager: false
     class: null
     tls:

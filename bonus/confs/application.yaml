@@ -1,6 +1,7 @@
 # Argo CD Application: tells Argo CD to watch the local GitLab project
-# (which itself mirrors our GitHub repo) and sync any Kubernetes manifests
-# it finds under p3/manifests into the "dev" namespace of this cluster.
+# (which mirrors the upstream GitHub repository) and sync any Kubernetes
+# manifests it finds under the manifests/ folder into the "dev" namespace
+# of this cluster.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,7 +16,7 @@ spec:
   source:
     repoURL: http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/root/iot-app.git
     targetRevision: main
-    path: /manifests
+    path: manifests
 
   # Destination: which cluster and namespace to deploy into.
   destination:

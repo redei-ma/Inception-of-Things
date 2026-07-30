@@ -1,0 +1,53 @@
+# Vagrant
+.vagrant/
+*.box
+Vagrantfile.local
+
+# Kubernetes / kubectl
+kubeconfig
+*.kubeconfig
+.kube/
+
+# Secrets / credentials
+*.pem
+*.key
+*.crt
+*.pfx
+
+# OS
+.DS_Store
+Thumbs.db
+*Zone.Identifier
+
+# IDE - Generic
+.idea/
+.project
+.classpath
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# AI Assistants
+.claude/
+CLAUDE.md
+
+# Logs
+*.log
+
+# Temp
+tmp/
+temp/
+.temp
+.tmp
+
+# Personal notes (not for repo)
+to_do.txt
+guida-difesa.md

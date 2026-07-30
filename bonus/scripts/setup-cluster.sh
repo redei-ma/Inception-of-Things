@@ -1,7 +1,7 @@
 #!/bin/bash
 # Creates the k3d cluster, installs Argo CD and a local GitLab instance,
-# imports our GitHub repository into GitLab, then applies the Argo CD Application
-# so that everything is driven by the local GitLab (instead of GitHub).
+# imports the upstream GitHub repository into GitLab, then applies the Argo CD
+# Application so that everything is driven by the local GitLab (instead of GitHub).
 
 set -euo pipefail
 
@@ -21,7 +21,9 @@ kubectl create namespace gitlab
 # --- Install Argo CD from the official upstream manifest ---
 # Server-side apply avoids the "annotations too long" error caused by the
 # large CRDs shipped by Argo CD when using classic client-side apply.
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side
+kubectl apply -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.12/manifests/install.yaml \
+  --server-side
 
 # --- Wait until all Argo CD deployments are Available ---
 kubectl wait --for=condition=available --timeout=300s deployment --all -n argocd
@@ -30,6 +32,7 @@ kubectl wait --for=condition=available --timeout=300s deployment --all -n argocd
 helm repo add gitlab https://charts.gitlab.io/
 helm repo update
 helm install gitlab gitlab/gitlab \
+    --version 10.2.1 \
     --namespace gitlab \
     --values /vagrant/confs/gitlab-values.yaml \
     --timeout 15m
@@ -41,13 +44,13 @@ kubectl wait --for=condition=available --timeout=900s deployment --all -n gitlab
 GITLAB_ROOT_PASSWORD=$(kubectl get secret gitlab-gitlab-initial-root-password \
     -n gitlab -o jsonpath="{.data.password}" | base64 -d)
 
-# --- Open a background port-forward so we can talk to GitLab's HTTP API ---
+# --- Open a background port-forward to reach GitLab's HTTP API from this VM ---
 kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181 >/dev/null 2>&1 &
 PF_PID=$!
 sleep 5
 
-# --- Create a GitLab project that imports from the public GitHub repo ---
-# Argo CD will then read the manifests from this local GitLab project.
+# --- Create a GitLab project that imports from the public GitHub repository ---
+# Argo CD reads the manifests from this local GitLab project instead of GitHub.
 curl -sSf --request POST \
     --user "root:$GITLAB_ROOT_PASSWORD" \
     --header "Content-Type: application/json" \

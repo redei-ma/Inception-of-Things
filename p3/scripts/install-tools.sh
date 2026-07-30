@@ -18,11 +18,10 @@ curl -fsSL https://get.docker.com | sh
 usermod -aG docker vagrant
 
 # --- kubectl (official binary, matched to the VM architecture) ---
-ARCH=$(dpkg --print-architecture)   # returns "arm64" or "amd64"
-KUBECTL_VERSION=$(curl -Ls https://dl.k8s.io/release/stable.txt)
+ARCH=$(dpkg --print-architecture)
 curl -Lo /usr/local/bin/kubectl \
-  "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl"
+  "https://dl.k8s.io/release/v1.36.2/bin/linux/${ARCH}/kubectl"
 chmod +x /usr/local/bin/kubectl
 
 # --- k3d (official install script) ---
-curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.9.0 bash
