@@ -1,7 +1,7 @@
 # Minimal Helm values for the official GitLab chart.
 # Disables optional and resource-heavy components that are not required
-# for this bonus (registry, prometheus, gitlab-runner, cert-manager,
-# nginx-ingress), so that the full stack fits comfortably in the VM.
+# for this bonus (registry, prometheus, gitlab-runner, nginx-ingress),
+# so that the full stack fits comfortably in the VM.
 #
 # GitLab is reached only from inside the cluster through the Service DNS
 # (gitlab-webservice-default.gitlab.svc.cluster.local:8181); there is no
@@ -13,17 +13,20 @@ global:
   hosts:
     # Required by the chart even when GitLab is not exposed publicly.
     domain: example.com
+    # Tell GitLab it is served over plain HTTP, so it does not add the
+    # "Secure" flag to session/CSRF cookies (which browsers reject on
+    # non-HTTPS connections, leading to 422 on the login form).
+    https: false
   ingress:
     # No public ingress and no TLS certificate are configured.
+    # Setting configureCertmanager to false also prevents the chart
+    # from wiring cert-manager into the GitLab ingress objects.
     configureCertmanager: false
     class: null
     tls:
       enabled: false
 
 # --- Disabled optional components ---
-certmanager:
-  install: false
-
 nginx-ingress:
   enabled: false
 

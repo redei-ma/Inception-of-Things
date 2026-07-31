@@ -3,6 +3,9 @@
 *.box
 Vagrantfile.local
 
+# Runtime artifacts written by the provisioning scripts
+p1/token
+
 # Kubernetes / kubectl
 kubeconfig
 *.kubeconfig

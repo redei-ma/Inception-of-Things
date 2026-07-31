@@ -32,7 +32,7 @@ kubectl wait --for=condition=available --timeout=300s deployment --all -n argocd
 helm repo add gitlab https://charts.gitlab.io/
 helm repo update
 helm install gitlab gitlab/gitlab \
-    --version 10.2.1 \
+    --version 9.11.8 \
     --namespace gitlab \
     --values /vagrant/confs/gitlab-values.yaml \
     --timeout 15m
@@ -40,32 +40,29 @@ helm install gitlab gitlab/gitlab \
 # --- Wait until every GitLab deployment is Available (may take several minutes) ---
 kubectl wait --for=condition=available --timeout=900s deployment --all -n gitlab
 
-# --- Fetch the auto-generated root password from the initial secret ---
-GITLAB_ROOT_PASSWORD=$(kubectl get secret gitlab-gitlab-initial-root-password \
-    -n gitlab -o jsonpath="{.data.password}" | base64 -d)
-
-# --- Open a background port-forward to reach GitLab's HTTP API from this VM ---
-kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181 >/dev/null 2>&1 &
-PF_PID=$!
-sleep 5
-
-# --- Create a GitLab project that imports from the public GitHub repository ---
-# Argo CD reads the manifests from this local GitLab project instead of GitHub.
-curl -sSf --request POST \
-    --user "root:$GITLAB_ROOT_PASSWORD" \
-    --header "Content-Type: application/json" \
-    --data '{"name":"iot-app","visibility":"public","import_url":"https://github.com/redei-ma/Inception-of-Things.git"}' \
-    "http://localhost:8181/api/v4/projects"
-
-# --- Wait until the GitHub -> GitLab import is finished ---
-until curl -s --user "root:$GITLAB_ROOT_PASSWORD" \
-        "http://localhost:8181/api/v4/projects/root%2Fiot-app" \
-        | grep -q '"import_status":"finished"'; do
-  sleep 5
-done
-
-# --- Stop the background port-forward ---
-kill $PF_PID 2>/dev/null || true
+# --- Bootstrap GitLab entirely through the Rails console via the toolbox pod ---
+# Enable "git" as an allowed import source, create the "iot-app" project
+# owned by root that mirrors the public GitHub repository, and wait for the
+# import to complete. Everything runs inside GitLab's own Ruby process, so
+# no HTTP authorisation layer stands in the way.
+kubectl exec -n gitlab deploy/gitlab-toolbox -c toolbox -- gitlab-rails runner "
+  ApplicationSetting.current.update!(import_sources: ['git', 'gitlab_project'])
+  root = User.find_by_username('root')
+  project = Projects::CreateService.new(root,
+    name: 'iot-app',
+    path: 'iot-app',
+    namespace_id: root.namespace_id,
+    visibility_level: Gitlab::VisibilityLevel::PUBLIC,
+    import_url: 'https://github.com/redei-ma/Inception-of-Things.git'
+  ).execute
+  raise 'Project creation failed: ' + project.errors.full_messages.join(', ') unless project.persisted?
+  loop do
+    project.reload
+    break if project.import_status == 'finished'
+    raise 'Import failed' if project.import_status == 'failed'
+    sleep 5
+  end
+"
 
 # --- Deploy the Argo CD Application resource (points to local GitLab) ---
 kubectl apply -f /vagrant/confs/application.yaml
