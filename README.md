@@ -32,7 +32,8 @@ subject itself.
 - **GitOps with Argo CD**: declarative desired state stored in Git,
   automatic sync and self-heal
 - **Local GitLab** as an in-cluster Git server, populated on install by
-  importing an upstream repository through the GitLab API
+  invoking `gitlab-rails runner` inside the toolbox pod to create the
+  project and trigger the import from an upstream repository
 
 ## How to run each part
 
@@ -100,5 +101,6 @@ repository.
   those packages are installed but do nothing, keeping the setup portable.
 - The GitLab chart is installed with a minimal `values.yaml` that disables
   the components not needed for this lab (registry, prometheus, runner,
-  cert-manager, nginx-ingress). GitLab is reached only through the internal
+  nginx-ingress) and forces `global.hosts.https: false` so login cookies
+  work over plain HTTP. GitLab is reached only through the internal
   cluster DNS.
