@@ -1,14 +1,10 @@
 # Inception of Things
 
-A hands-on introduction to Kubernetes built in four progressively richer parts.
-Every stage runs on a self-provisioned virtual machine and can be brought up
-with a single `vagrant up`, so the whole stack — from a bare Ubuntu box to a
-GitOps pipeline backed by a locally hosted GitLab — is reproducible from
-scratch.
-
-The project follows the [`Inception-of-Things`](https://cdn.intra.42.fr/pdf/pdf/145333/en.subject.pdf)
-subject; the folder layout (`p1`, `p2`, `p3`, `bonus`) is dictated by the
-subject itself.
+Four Kubernetes environments of growing complexity, each provisioned from
+scratch on its own virtual machine and brought up with a single `vagrant up`.
+They go from two machines joining into a K3s cluster over a shared token, to
+host-based Ingress routing, to a GitOps pipeline where Argo CD deploys from a
+GitLab running inside the cluster itself.
 
 ## What you will find here
 
@@ -81,17 +77,18 @@ confs/                  # Kubernetes / Helm configuration applied on the VM
 
 ## Reproducibility
 
-Every external download and container image is pinned to a specific version,
-so a `vagrant up` today and one in six months produce the same stack:
+Every component listed below is pinned to an explicit version:
 
 - Vagrant box (`bento/ubuntu-24.04`)
 - K3s, k3d, kubectl, Helm, Argo CD manifests
 - GitLab Helm chart
 - Application container images (`wil42/playground`, `traefik/whoami`)
 
+Docker is the exception: it is installed from `get.docker.com`, which always
+brings in the current release.
+
 To bump a component, edit the version string in the corresponding script or
-manifest — there is no floating `latest` or `stable` tag anywhere in the
-repository.
+manifest. No `latest` or `stable` tag appears anywhere in the repository.
 
 ## Notes on the local environment
 
